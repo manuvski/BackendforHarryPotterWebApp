@@ -1,0 +1,15 @@
+version: '3.7'
+services:
+  db:
+    container_name: 'harryweb2'
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: harryweb2
+      POSTGRES_DB: harryweb2
+      POSTGRES_PASSWORD: harryweb2
+    ports:
+      - 5432:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+volumes:
+  db-data:
