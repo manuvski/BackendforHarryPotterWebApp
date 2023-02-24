@@ -27,7 +27,6 @@ const startApp = async () => {
         response.json('Aquí estoy')
     })
 
-    app.use('/mars', marsRoutes)
     app.use('/syncApi', syncApi)
     app.use('/users', userRouter)
     app.use('/auth', authRoutes)
