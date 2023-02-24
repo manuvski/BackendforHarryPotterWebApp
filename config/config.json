@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "harryweb2",
+    "password": "harryweb2",
+    "database": "harryweb2",
+    "host": "localhost",
+    "dialect": "postgres"
+  }
+}
