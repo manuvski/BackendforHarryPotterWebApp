@@ -1,8 +1,9 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-// const marsRoutes = require('./src/routes/mars.js')
-const syncApi = require ('./src/routes/syncApi')
-// const db = require('./src/models')
+const syncCharacters = require ('./src/routes/syncCharacters')
+const syncStudents = require ('./src/routes/syncStudents')
+const syncStaff = require ('./src/routes/syncStaff')
+const db = require('./src/models')
 const userRouter = require('./src/routes/users.js')
 const authRoutes = require('./src/routes/auth')
 const dotenv = require('dotenv')
@@ -27,7 +28,9 @@ const startApp = async () => {
         response.json('Aquí estoy')
     })
 
-    app.use('/syncApi', syncApi)
+    app.use('/syncCharacters', syncCharacters)
+    app.use('/syncStudents', syncStudents)
+    app.use('/syncStaff', syncStaff)
     app.use('/users', userRouter)
     app.use('/auth', authRoutes)
 

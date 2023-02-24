@@ -26,7 +26,7 @@ console.log(currentFavList)
     let isAdded = false
 
     if (!existed) {
-        const characters = await Characters.findByPk(charactersId)
+        const characters = await Characters.findByPk(characterId)
         if (!characters) {
             throw new Error('Character not found');
         }
@@ -35,7 +35,7 @@ console.log(currentFavList)
         console.log(isAdded)
 
         } else {
-           const newList = currentFavList.filter(item => item !== charactersId)
+           const newList = currentFavList.filter(item => item !== characterId)
            user.setFavorites(newList)
         }
         return {user, isAdded}
