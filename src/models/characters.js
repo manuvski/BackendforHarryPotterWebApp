@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
         allowNull: false,
       },
-      charactersId: DataTypes.STRING,
+      characterId: DataTypes.STRING,
       name: DataTypes.STRING,
       species: DataTypes.STRING,
       house: DataTypes.STRING,
