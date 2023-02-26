@@ -1,7 +1,7 @@
 const db = require('../models')
 const User = db.User
 const userRouter = require('express').Router()
-const { toggleTaskToFavorite, getUserById } = require('../controllers/users')
+// const { toggleTaskToFavorite, getUserById } = require('../controllers/users')
 
 
 userRouter.post('/favorites/:marsId', async (request, response) => {
