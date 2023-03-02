@@ -6,27 +6,27 @@ const getCharactersList = async () => {
     return character
 }
 
-const getMarsById = async (id) => {
-    const mars = await Mars.findByPK(id)
-    return mars
+const getCharactersById = async (id) => {
+    const character = await Character.findByPK(id)
+    return character
 }
 
-const createMars = async ({ nasaId, sol, image }) => {
-    const mars = await Mars.create({  nasaId, sol, image })
-    return mars
+const createCharacter = async ({ nasaId, sol, image }) => {
+    const character = await Character.create({  nasaId, sol, image })
+    return character
 }
 
-const updateMars = async (id, data) => {
-    const mars = await Mars.update(data, {
+const updateCharacter = async (id, data) => {
+    const character = await Character.update(data, {
         where: {
             id
         }
     })
-    return mars
+    return character
 }
 
-const removeMars = async (id) => {
-    await Mars.destroy({
+const removeCharacter = async (id) => {
+    await Character.destroy({
         where: {
             id
         }
@@ -37,8 +37,8 @@ const removeMars = async (id) => {
 
 module.exports = {
     getCharactersList,
-    getMarsById,
-    createMars,
-    updateMars,
-    removeMars
+    getCharactersById,
+    createCharacter,
+    updateCharacter,
+    removeCharacter
 }
