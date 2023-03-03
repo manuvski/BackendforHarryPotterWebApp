@@ -8,7 +8,6 @@ const Characters = require('./src/routes/characters')
 const Students = require('./src/routes/students')
 const Staff = require('./src/routes/staff')
 const Spells = require('./src/routes/spells')
-const Profile = require('./src/routes/profile')
 const db = require('./src/models')
 const userRouter = require('./src/routes/users.js')
 const authRoutes = require('./src/routes/auth')
@@ -45,7 +44,6 @@ const startApp = async () => {
   app.use('/syncSpells', syncSpells)
   app.use('/users', userRouter)
   app.use('/auth', authRoutes)
-  app.use('/profile', Profile)
 
   try {
     app.listen(port, () => {
