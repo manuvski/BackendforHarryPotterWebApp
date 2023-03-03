@@ -20,6 +20,7 @@ router.get('/:id', async (request, response) => {
     const character = await getCharactersById(id)
     response.status(200).json(character)
   } catch (error) {
+    console.log(error)
     response.status(500).json(error)
   }
 })
