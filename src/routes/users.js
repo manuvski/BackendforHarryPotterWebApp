@@ -2,7 +2,18 @@ const db = require('../models')
 const User = db.User
 const userRouter = require('express').Router()
 // const { toggleTaskToFavorite, getUserById } = require('../controllers/users')
+const { getUserByEmail } = require('../controllers/users')
 
+userRouter.get('/profile', async (request, response) => {
+  try {
+    const req = request
+    const user = await getUserByEmail(req.user.email);
+    response.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+    response.status(500).json(error.message);
+  }
+});
 
 userRouter.post('/favorites/:marsId', async (request, response) => {
     try {
