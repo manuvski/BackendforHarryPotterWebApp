@@ -7,7 +7,7 @@ const getStaffList = async () => {
 }
 
 const getStaffById = async (id) => {
-    const staff = await Staff.findByPK(id)
+    const staff = await Staff.findOne({ where: { id } })
     return staff
 }
 

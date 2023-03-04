@@ -16,12 +16,16 @@ const createCharacter = async ({ nasaId, sol, image }) => {
 }
 
 const updateCharacter = async (id, data) => {
-  const character = await models.Character.update(data, {
-    where: {
-      id,
-    },
-  })
-  return character
+  await models.Character.update(
+    { ...data },
+    {
+      where: {
+        id,
+      },
+    }
+  )
+
+  return getCharactersById(id)
 }
 
 const removeCharacter = async (id) => {

@@ -38,6 +38,7 @@ router.put('/:id', async (request, response) => {
   try {
     const { id } = request.params
     const data = request.body
+    console.log({id, data})
     const character = await updateCharacter(id, data)
     response.status(200).json(character)
   } catch (error) {
@@ -53,4 +54,5 @@ router.delete('/:id', async (request, response) => {
     response.status(500)
   }
 })
+
 module.exports = router
