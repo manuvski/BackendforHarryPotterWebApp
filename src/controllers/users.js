@@ -1,6 +1,6 @@
 const db = require('../models')
 const User = db.User
-// const Characters = db.Characters
+const Characters = db.Characters
 
 const getUserById = async (id) => {
   const user = await User.findByPK(id)
@@ -11,35 +11,34 @@ const getUserByEmail = async (email) => {
   const user = await User.findOne({ where: { email: email } })
   return user
 }
-// const toggleTaskToFavorite = async ({ userId, marsId }) => {
-//   let user = await User.findByPk(userId, {
-//     attributes: { exclude: ['password', 'salt'] },
-//     include: {
-//       model: db.Characters,
-//       as: 'favorites',
-//     },
-//   })
+const toggleTaskToFavorite = async ({ userId, characterId }) => {
+  let user = await User.findByPk(userId, {
+    attributes: { exclude: ['password', 'salt'] },
+    include: {
+      model: db.Characters,
+      as: 'favorites',
+    },
+  })
 
-//   let currentFavList = user.favorites.map((item) => item.id) || []
-//   console.log(currentFavList)
-//   const existed = currentFavList.includes(marsId)
-//   let isAdded = false
+  let currentFavList = user.favorites.map((item) => item.id) || []
+  console.log(currentFavList)
+  const existed = currentFavList.includes(characterId)
+  let isAdded = false
 
-// <<<<<<< HEAD
-//     if (!existed) {
-//         const characters = await Characters.findByPk(characterId)
-//         if (!characters) {
-//             throw new Error('Character not found');
-//         }
-//         user.addFavorites(characters)
-//         isAdded = true;
-//         console.log(isAdded)
-
-//         } else {
-//            const newList = currentFavList.filter(item => item !== characterId)
-//            user.setFavorites(newList)
-//         }
-//         return {user, isAdded}
+  if (!existed) {
+    const characters = await Characters.findOne(characterId)
+    if (!characters) {
+      throw new Error('Character not found')
+    }
+    user.addFavorites(characters)
+    isAdded = true
+    console.log(isAdded)
+  } else {
+    const newList = currentFavList.filter((item) => item !== characterId)
+    user.setFavorites(newList)
+  }
+  return { user, isAdded }
+}
 // =======
 //   if (!existed) {
 //     const characters = await Characters.findByPk(characterId)
@@ -58,7 +57,7 @@ const getUserByEmail = async (email) => {
 // }
 
 module.exports = {
-//   toggleTaskToFavorite,
+  toggleTaskToFavorite,
   getUserByEmail,
   getUserById,
 }
