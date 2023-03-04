@@ -7,7 +7,7 @@ const getSpellsList = async () => {
 }
 
 const getSpellsById = async (id) => {
-    const spell = await Spells.findByPK(id)
+    const spell = await Spells.findOne({ where: { id } })
     return spell
 }
 

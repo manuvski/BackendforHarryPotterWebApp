@@ -7,7 +7,7 @@ const getStudentsList = async () => {
 }
 
 const getStudentsById = async (id) => {
-    const student = await Students.findByPK(id)
+    const student = await Students.findOne({ where: { id } })
     return student
 }
 
