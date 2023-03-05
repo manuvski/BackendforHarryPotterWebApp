@@ -10,6 +10,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      models.Character.belongsToMany(models.User, {
+        through: 'usercharacter',
+        as: 'favoritedBy',
+        foreignKey: 'CharacterId',
+        onDelete: 'cascade',
+      })
     }
   }
   Character.init(
