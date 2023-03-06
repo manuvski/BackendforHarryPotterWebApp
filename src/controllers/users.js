@@ -1,6 +1,7 @@
 const db = require('../models')
 const User = db.User
 const Character = db.Character
+const UserCharacters = db.UsersCharacter
 
 const getUserById = async (id) => {
   const user = await User.findOne(id)
@@ -11,7 +12,37 @@ const getUserByEmail = async (email) => {
   const user = await User.findOne({ where: { email: email } })
   return user
 }
-const toggleCharacterToFav = async ({ userId, characterId }) => {
+
+const getCharactersFavs = async (userId) => {
+  const user = await User.findOne({
+    where: { id: userId },
+  })
+
+  if (!user) {
+    throw new Error('User not found')
+  }
+
+  const userCharacters = await UserCharacters.findAll({
+    where: {
+      userId,
+      characterId,
+    },
+  })
+
+  const charactersIds = userCharacters.map(
+    (usercharacter) => usercharacter.characterId
+  )
+  const characters = await Character.findAll({
+    where: { id: charactersIds },
+  })
+
+  return characters.map((character) => ({
+    ...character.dataValues,
+    isFav: true,
+  }))
+}
+
+const toggleCharacterToFav = async ({ userId, haracterId }) => {
   let user = await User.findOne({
     where: { id: userId },
     attributes: { exclude: ['password', 'salt'] },
@@ -20,12 +51,6 @@ const toggleCharacterToFav = async ({ userId, characterId }) => {
       as: 'favorites',
     },
   })
-
-  // let character = await Character.findOne({
-  //   where: { id: characterId },
-  // })
-
-  // let currentFavList = user.favorites.map((item) => item.id) || []
 
   console.log(user)
   let currentFavList = (user.favorites || []).map((item) => item.id)
@@ -76,5 +101,6 @@ const toggleCharacterToFav = async ({ userId, characterId }) => {
 module.exports = {
   toggleCharacterToFav,
   getUserByEmail,
+  getCharactersFavs,
   getUserById,
 }

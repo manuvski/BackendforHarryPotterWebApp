@@ -3,9 +3,21 @@ const User = db.User
 const userRouter = require('express').Router()
 const {
   toggleCharacterToFav,
+  getCharactersFavs,
   getUserById,
   getUserByEmail,
 } = require('../controllers/users')
+
+userRouter.get('/fav-characters', async (request, response) => {
+  try {
+    const req = request
+    const characters = await getCharactersFavs(req.user.id)
+    response.status(200).json(characters)
+  } catch (error) {
+    console.log(error)
+    response.status(500).json(error.message)
+  }
+})
 
 userRouter.get('/profile', async (request, response) => {
   try {
