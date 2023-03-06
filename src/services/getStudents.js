@@ -46,4 +46,4 @@ async function getStudentsData() {
   }
 }
 
-module.exports =  getStudentsData 
+module.exports = getStudentsData

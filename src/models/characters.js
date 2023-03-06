@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       models.Character.belongsToMany(models.User, {
         through: 'usercharacter',
         as: 'favoritedBy',
-        foreignKey: 'CharacterId',
+        foreignKey: 'characterId',
         onDelete: 'cascade',
       })
     }
