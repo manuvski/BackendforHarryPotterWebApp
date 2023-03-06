@@ -3,6 +3,7 @@ const User = db.User
 const userRouter = require('express').Router()
 const {
   toggleCharacterToFav,
+  toggleStudentToFav,
   getUserById,
   getUserByEmail,
 } = require('../controllers/users')
@@ -24,6 +25,21 @@ userRouter.post('/character/fav', async (request, response) => {
     const { characterId } = request.body
     const user = await toggleCharacterToFav({
       characterId,
+      userId: req.user.id,
+    })
+    response.status(200).json(user)
+  } catch (error) {
+    console.log(error)
+    response.status(500).json(error.message)
+  }
+})
+
+userRouter.post('/student/fav', async (request, response) => {
+  try {
+    const req = request
+    const { studentId } = request.body
+    const user = await toggleStudentToFav({
+      studentId,
       userId: req.user.id,
     })
     response.status(200).json(user)

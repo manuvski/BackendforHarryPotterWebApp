@@ -14,6 +14,7 @@ router.get('/', async (request, response) => {
     response.status(500)
   }
 })
+
 router.get('/:id', async (request, response) => {
   try {
     const { id } = request.params

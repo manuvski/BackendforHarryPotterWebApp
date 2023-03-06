@@ -20,18 +20,10 @@ const toggleCharacterToFav = async ({ userId, characterId }) => {
       as: 'favorites',
     },
   })
-
-  // let character = await Character.findOne({
-  //   where: { id: characterId },
-  // })
-
-  // let currentFavList = user.favorites.map((item) => item.id) || []
-
   console.log(user)
   let currentFavList = (user.favorites || []).map((item) => item.id)
-  console.log(currentFavList)
   const existed = currentFavList.includes(characterId)
-  let isAdded = true
+  let isAdded = false
 
   if (!existed) {
     const characters = await Character.findOne({
@@ -52,26 +44,10 @@ const toggleCharacterToFav = async ({ userId, characterId }) => {
   } else {
     const newList = currentFavList.filter((item) => item !== characterId)
     user.setFavorites(newList)
-    isAdded = true
+    isAdded = false
   }
   return { user, isAdded }
 }
-// =======
-//   if (!existed) {
-//     const characters = await Characters.findByPk(characterId)
-//     if (!characters) {
-//       throw new Error('Character not found')
-// >>>>>>> 32f423e3fc55d538b672256eccb8f820261f5764
-//     }
-//     user.addFavorites(characters)
-//     isAdded = true
-//     console.log(isAdded)
-//   } else {
-//     const newList = currentFavList.filter((item) => item !== characterId)
-//     user.setFavorites(newList)
-//   }
-//   return { user, isAdded }
-// }
 
 module.exports = {
   toggleCharacterToFav,
