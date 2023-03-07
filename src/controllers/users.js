@@ -15,6 +15,38 @@ const getUserByEmail = async (email) => {
   return user
 }
 
+const getUserByFavs = async (userId) => {
+  const user = await User.findOne({  where: { id: userId },
+    attributes: {
+      exclude: ['password', 'salt', 'createdAt', 'updatedAt', 'id', 'email'],
+    },
+    include: [
+      {
+        model: db.Character,
+        through: 'userCharacter',
+        as: 'favorites',
+      },
+      {
+        model: db.Student,
+        through: 'userstudent',
+        as: 'favoritesStudents',
+      },
+      {
+        model: db.Staff,
+        through: 'userstaff',
+        as: 'favoritesStaff',
+      },
+      {
+        model: db.Spell,
+        through: 'userSpell',
+        as: 'favoritesSpells',
+      },
+    ],
+  })
+  return user
+}
+
+
 const getCharactersFavs = async (userId) => {
   const user = await User.findOne({
     where: { id: userId },
@@ -24,7 +56,7 @@ const getCharactersFavs = async (userId) => {
     throw new Error('User not found')
   }
 
-  const userCharacters = await UserCharacters.findAll({
+  const userCharacters = await usercharacters.findAll({
     where: {
       userId,
       characterId,
@@ -44,8 +76,8 @@ const getCharactersFavs = async (userId) => {
   }))
 }
 
-const toggleCharacterToFav = async ({ userId, characterId }) => {
 
+const toggleCharacterToFav = async ({ userId, characterId }) => {
   let user = await User.findOne({
     where: { id: userId },
     attributes: { exclude: ['password', 'salt'] },
@@ -54,37 +86,58 @@ const toggleCharacterToFav = async ({ userId, characterId }) => {
       as: 'favorites',
     },
   })
-  
+
   let currentFavList = (user.favorites || []).map((item) => item.id)
   const existed = currentFavList.includes(characterId)
   let isAdded = false
 
   if (!existed) {
-    const characters = await Character.findOne({
+    const character = await Character.findOne({
       where: { id: characterId },
+    })
+
+    if (!character) {
+      throw new Error('Character not found')
+    }
+
+    await user.addFavorites(character)
+    user = await User.findOne({
+      where: { id: userId },
+      attributes: { exclude: ['password', 'salt'] },
       include: {
-        model: db.User,
-        as: 'favoritedBy',
+        model: db.Character,
+        as: 'favorites',
       },
     })
 
-    if (!characters) {
-      throw new Error('Character not found')
-    }
-    user.addFavorites(characters)
-    currentFavList.push(characterId)
+    currentFavList = (user.favorites || []).map((item) => item.id)
     isAdded = true
-    console.log(isAdded)
   } else {
     const newList = currentFavList.filter((item) => item !== characterId)
-    user.setFavorites(newList)
+    await user.setFavorites(newList)
+    user = await User.findOne({
+      where: { id: userId },
+      attributes: { exclude: ['password', 'salt'] },
+      include: {
+        model: db.Character,
+        as: 'favorites',
+      },
+    })
+
+    currentFavList = (user.favorites || []).map((item) => item.id)
     isAdded = false
   }
+
+  const characters = await Character.findAll({
+    where: { id: currentFavList },
+  })
+
+  user.favorites = characters
+
   return { user, isAdded }
 }
 
 const toggleStudentToFav = async ({ userId, studentId }) => {
-  console.log({userId, studentId})
   let user = await User.findOne({
     where: { id: userId },
     attributes: { exclude: ['password', 'salt'] },
@@ -93,39 +146,58 @@ const toggleStudentToFav = async ({ userId, studentId }) => {
       as: 'favoritesStudents',
     },
   })
-  console.log(user)
+
   let currentFavList = (user.favoritesStudents || []).map((item) => item.id)
   const existed = currentFavList.includes(studentId)
   let isAdded = false
 
   if (!existed) {
-    const students = await Student.findOne({
+    const student = await Student.findOne({
       where: { id: studentId },
-      include: {
-        model: db.User,
-        as: 'favoritedByStudent',
-      },
     })
 
-    if (!students) {
+    if (!student) {
       throw new Error('Student not found')
     }
 
-    user.addFavoritesStudents(students)
-    currentFavList.push(studentId)
+    await user.addFavoritesStudents(student)
+    user = await User.findOne({
+      where: { id: userId },
+      attributes: { exclude: ['password', 'salt'] },
+      include: {
+        model: db.Student,
+        as: 'favoritesStudents',
+      },
+    })
+
+    currentFavList = (user.favoritesStudents || []).map((item) => item.id)
     isAdded = true
-    console.log(isAdded)
   } else {
     const newList = currentFavList.filter((item) => item !== studentId)
-    user.setFavoritesStudents(newList)
+    await user.setFavoritesStudents(newList)
+    user = await User.findOne({
+      where: { id: userId },
+      attributes: { exclude: ['password', 'salt'] },
+      include: {
+        model: db.Student,
+        as: 'favoritesStudents',
+      },
+    })
+
+    currentFavList = (user.favoritesStudents || []).map((item) => item.id)
     isAdded = false
   }
+
+  const students = await Student.findAll({
+    where: { id: currentFavList },
+  })
+
+  user.favoritesStudents = students
 
   return { user, isAdded }
 }
 
 const toggleStaffToFav = async ({ userId, staffId }) => {
-  console.log({userId, staffId})
   let user = await User.findOne({
     where: { id: userId },
     attributes: { exclude: ['password', 'salt'] },
@@ -134,7 +206,7 @@ const toggleStaffToFav = async ({ userId, staffId }) => {
       as: 'favoritesStaff',
     },
   })
-  console.log(user)
+
   let currentFavList = (user.favoritesStaff || []).map((item) => item.id)
   const existed = currentFavList.includes(staffId)
   let isAdded = false
@@ -142,31 +214,50 @@ const toggleStaffToFav = async ({ userId, staffId }) => {
   if (!existed) {
     const staff = await Staff.findOne({
       where: { id: staffId },
-      include: {
-        model: db.User,
-        as: 'favoritedByStaff',
-      },
     })
 
     if (!staff) {
       throw new Error('Staff not found')
     }
 
-    user.addFavoritesStaff(staff)
-    currentFavList.push(staffId)
+    await user.addFavoritesStaff(staff)
+    user = await User.findOne({
+      where: { id: userId },
+      attributes: { exclude: ['password', 'salt'] },
+      include: {
+        model: db.Staff,
+        as: 'favoritesStaff',
+      },
+    })
+
+    currentFavList = (user.favoritesStaff || []).map((item) => item.id)
     isAdded = true
-    console.log(isAdded)
   } else {
     const newList = currentFavList.filter((item) => item !== staffId)
-    user.setFavoritesStaff(newList)
+    await user.setFavoritesStaff(newList)
+    user = await User.findOne({
+      where: { id: userId },
+      attributes: { exclude: ['password', 'salt'] },
+      include: {
+        model: db.Student,
+        as: 'favoritesStaff',
+      },
+    })
+
+    currentFavList = (user.favoritesStaff || []).map((item) => item.id)
     isAdded = false
   }
+
+  const staff = await Staff.findAll({
+    where: { id: currentFavList },
+  })
+
+  user.favoritesStaff = staff
 
   return { user, isAdded }
 }
 
 const toggleSpellToFav = async ({ userId, spellId }) => {
-  console.log({userId, spellId})
   let user = await User.findOne({
     where: { id: userId },
     attributes: { exclude: ['password', 'salt'] },
@@ -175,7 +266,7 @@ const toggleSpellToFav = async ({ userId, spellId }) => {
       as: 'favoritesSpells',
     },
   })
-  console.log(user)
+
   let currentFavList = (user.favoritesSpells || []).map((item) => item.id)
   const existed = currentFavList.includes(spellId)
   let isAdded = false
@@ -183,35 +274,57 @@ const toggleSpellToFav = async ({ userId, spellId }) => {
   if (!existed) {
     const spell = await Spell.findOne({
       where: { id: spellId },
-      include: {
-        model: db.User,
-        as: 'favoritedBySpell',
-      },
     })
 
     if (!spell) {
       throw new Error('Spell not found')
     }
 
-    user.addFavoritesSpells(spell)
-    currentFavList.push(spellId)
+    await user.addFavoritesSpells(spell)
+    user = await User.findOne({
+      where: { id: userId },
+      attributes: { exclude: ['password', 'salt'] },
+      include: {
+        model: db.Spell,
+        as: 'favoritesSpells',
+      },
+    })
+
+    currentFavList = (user.favoritesSpells || []).map((item) => item.id)
     isAdded = true
-    console.log(isAdded)
   } else {
     const newList = currentFavList.filter((item) => item !== spellId)
-    user.setFavoritesSpells(newList)
+    await user.setFavoritesSpells(newList)
+    user = await User.findOne({
+      where: { id: userId },
+      attributes: { exclude: ['password', 'salt'] },
+      include: {
+        model: db.Spell,
+        as: 'favoritesSpells',
+      },
+    })
+
+    currentFavList = (user.favoritesSpells || []).map((item) => item.id)
     isAdded = false
   }
+
+  const spells = await Spell.findAll({
+    where: { id: currentFavList },
+  })
+
+  user.favoritesSpells = spells
 
   return { user, isAdded }
 }
 
+
 module.exports = {
-  toggleCharacterToFav,
   getUserByEmail,
   getCharactersFavs,
   getUserById,
   toggleStudentToFav,
   toggleStaffToFav,
-  toggleSpellToFav
+  toggleSpellToFav,
+  toggleCharacterToFav,
+  getUserByFavs
 }
