@@ -5,7 +5,8 @@ const {
   toggleCharacterToFav,
   getCharactersFavs,
   toggleStudentToFav,
-
+  toggleStaffToFav,
+  toggleSpellToFav,
   getUserById,
   getUserByEmail,
 } = require('../controllers/users')
@@ -53,6 +54,36 @@ userRouter.post('/student/fav', async (request, response) => {
     const { studentId } = request.body
     const user = await toggleStudentToFav({
       studentId,
+      userId: req.user.id,
+    })
+    response.status(200).json(user)
+  } catch (error) {
+    console.log(error)
+    response.status(500).json(error.message)
+  }
+})
+
+userRouter.post('/staff/fav', async (request, response) => {
+  try {
+    const req = request
+    const { staffId } = request.body
+    const user = await toggleStaffToFav({
+      staffId,
+      userId: req.user.id,
+    })
+    response.status(200).json(user)
+  } catch (error) {
+    console.log(error)
+    response.status(500).json(error.message)
+  }
+})
+
+userRouter.post('/spell/fav', async (request, response) => {
+  try {
+    const req = request
+    const { spellId } = request.body
+    const user = await toggleSpellToFav({
+      spellId,
       userId: req.user.id,
     })
     response.status(200).json(user)

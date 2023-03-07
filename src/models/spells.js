@@ -9,6 +9,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      models.Spell.belongsToMany(models.User, {
+        through: 'userspell',
+        as: 'favoritedBySpell',
+        foreignKey: 'spellId',
+        onDelete: 'cascade',
+      })
     }
   }
   Spell.init(
