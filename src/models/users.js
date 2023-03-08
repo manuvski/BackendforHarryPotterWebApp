@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       User.belongsToMany(models.Character, {
         through: 'usercharacter',
-        as: 'favorites',
+        as: 'favoritesCharacters',
         foreignKey: 'userId',
         onDelete: 'cascade',
       })
