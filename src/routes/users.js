@@ -15,7 +15,6 @@ userRouter.get('/profile', async (request, response) => {
   try {
     const req = request
     const user = await getUserByEmail(req.user.email)
-    // console.log(user)
     response.status(200).json(user)
   } catch (error) {
     console.log(error)

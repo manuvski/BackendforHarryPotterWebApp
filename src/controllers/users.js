@@ -24,7 +24,7 @@ const getUserByFavs = async (userId) => {
       {
         model: db.Character,
         through: 'userCharacter',
-        as: 'favorites',
+        as: 'favoritesCharacters',
       },
       {
         model: db.Student,
@@ -83,11 +83,11 @@ const toggleCharacterToFav = async ({ userId, characterId }) => {
     attributes: { exclude: ['password', 'salt'] },
     include: {
       model: db.Character,
-      as: 'favorites',
+      as: 'favoritesCharacters',
     },
   })
 
-  let currentFavList = (user.favorites || []).map((item) => item.id)
+  let currentFavList = (user.favoritesCharacters || []).map((item) => item.id)
   const existed = currentFavList.includes(characterId)
   let isAdded = false
 
@@ -100,17 +100,17 @@ const toggleCharacterToFav = async ({ userId, characterId }) => {
       throw new Error('Character not found')
     }
 
-    await user.addFavorites(character)
+    await user.addFavoritesCharacters(character)
     user = await User.findOne({
       where: { id: userId },
       attributes: { exclude: ['password', 'salt'] },
       include: {
         model: db.Character,
-        as: 'favorites',
+        as: 'favoritesCharacters',
       },
     })
 
-    currentFavList = (user.favorites || []).map((item) => item.id)
+    currentFavList = (user.favoritesCharacters || []).map((item) => item.id)
     isAdded = true
   } else {
     const newList = currentFavList.filter((item) => item !== characterId)
@@ -120,11 +120,11 @@ const toggleCharacterToFav = async ({ userId, characterId }) => {
       attributes: { exclude: ['password', 'salt'] },
       include: {
         model: db.Character,
-        as: 'favorites',
+        as: 'favoritesCharacters',
       },
     })
 
-    currentFavList = (user.favorites || []).map((item) => item.id)
+    currentFavList = (user.favoritesCharacters || []).map((item) => item.id)
     isAdded = false
   }
 
@@ -132,7 +132,7 @@ const toggleCharacterToFav = async ({ userId, characterId }) => {
     where: { id: currentFavList },
   })
 
-  user.favorites = characters
+  user.favoritesCharacters = characters
 
   return { user, isAdded }
 }
