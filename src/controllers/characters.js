@@ -38,10 +38,35 @@ const removeCharacter = async (id) => {
   return true
 }
 
+const getAllCharacters = async (userId) => {
+  try {
+      const characters = await models.Character.findAll();
+      if (userId) {
+          const charactersIds = characters.map((character) => character.id);
+          const favoritesCharacters = await models.usercharacter.findAll({
+              where: {
+                  characterId: charactersIds,
+                  userId: userId,
+              },
+          });
+          return characters.map((character) => {
+              const isFav = !!favoritesCharacters.find(
+                  (item) => item.characterId === character.id
+              );
+              return { ...character.dataValues, isFav };
+          });
+      }
+      return characters;
+  } catch (error) {
+      console.log('THIS IS THE ERROR, ' + error.message);
+  }
+};
+
 module.exports = {
   getCharactersList,
   getCharactersById,
   createCharacter,
   updateCharacter,
   removeCharacter,
+  getAllCharacters
 }

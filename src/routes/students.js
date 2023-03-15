@@ -5,11 +5,14 @@ const {
   createStudents,
   updateStudents,
   removeStudents,
+  getAllStudents,
 } = require('../controllers/students')
+
 router.get('/', async (request, response) => {
   try {
-    const student = await getStudentsList()
-    response.status(200).json(student)
+    const students = await getAllStudents(request.user.id);
+    if (!students) res.status(403).json('STUDENTS EMPTY');
+    response.status(200).json(students)
   } catch (error) {
     response.status(500)
   }

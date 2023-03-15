@@ -35,10 +35,35 @@ const removeStaff = async (id) => {
   return true
 }
 
+const getAllStaff = async (userId) => {
+  try {
+      const staffs = await models.Staff.findAll();
+      if (userId) {
+          const staffsIds = staffs.map((staff) => staff.id);
+          const favoritesStaffs = await models.userstaff.findAll({
+              where: {
+                  staffId: staffsIds,
+                  userId: userId,
+              },
+          });
+          return staffs.map((staff) => {
+              const isFav = !!favoritesStaffs.find(
+                  (item) => item.staffId === staff.id
+              );
+              return { ...staff.dataValues, isFav };
+          });
+      }
+      return staffs;
+  } catch (error) {
+      console.log('THIS IS THE ERROR, ' + error.message);
+  }
+};
+
 module.exports = {
   getStaffList,
   getStaffById,
   createStaff,
   updateStaff,
   removeStaff,
+  getAllStaff
 }

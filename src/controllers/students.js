@@ -35,10 +35,34 @@ const removeStudents = async (id) => {
   return true
 }
 
+const getAllStudents = async (userId) => {
+  try {
+      const students = await models.Students.findAll();
+      if (userId) {
+          const studentsIds = students.map((student) => student.id);
+          const favoritesStudents = await models.userstudent.findAll({
+              where: {
+                  studentId: studentsIds,
+                  userId: userId,
+              },
+          });
+          return students.map((student) => {
+              const isFav = !!favoritesStudents.find(
+                  (item) => item.studentId === student.id
+              );
+              return { ...student.dataValues, isFav };
+          });
+      }
+      return students;
+  } catch (error) {
+      console.log('THIS IS THE ERROR, ' + error.message);
+  }
+};
 module.exports = {
   getStudentsList,
   getStudentsById,
   createStudents,
   updateStudents,
   removeStudents,
+  getAllStudents
 }

@@ -5,15 +5,19 @@ const {
   createStaff,
   updateStaff,
   removeStaff,
+  getAllStaff,
 } = require('../controllers/staff')
+
 router.get('/', async (request, response) => {
   try {
-    const staff = await getStaffList()
-    response.status(200).json(staff)
+    const staffs = await getAllStaff(request.user.id);
+    if (!staffs) res.status(403).json('STAFF EMPTY');
+    response.status(200).json(staffs)
   } catch (error) {
     response.status(500)
   }
 })
+
 router.get('/:id', async (request, response) => {
   try {
     const { id } = request.params

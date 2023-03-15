@@ -35,10 +35,35 @@ const removeSpells = async (id) => {
   return true
 }
 
+const getAllSpells = async (userId) => {
+  try {
+      const spells = await models.Spells.findAll();
+      if (userId) {
+          const spellsIds = spells.map((spell) => spell.id);
+          const favoritesSpells = await models.userspell.findAll({
+              where: {
+                  spellId: spellsIds,
+                  userId: userId,
+              },
+          });
+          return spells.map((spell) => {
+              const isFav = !!favoritesSpells.find(
+                  (item) => item.spellId === spell.id
+              );
+              return { ...spell.dataValues, isFav };
+          });
+      }
+      return spells;
+  } catch (error) {
+      console.log('THIS IS THE ERROR, ' + error.message);
+  }
+};
+
 module.exports = {
   getSpellsList,
   getSpellsById,
   createSpells,
   updateSpells,
   removeSpells,
+  getAllSpells
 }

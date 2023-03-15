@@ -5,15 +5,19 @@ const {
   createCharacter,
   updateCharacter,
   removeCharacter,
+  getAllCharacters,
 } = require('../controllers/characters')
+
 router.get('/', async (request, response) => {
   try {
-    const character = await getCharactersList()
-    response.status(200).json(character)
+    const characters = await getAllCharacters(request.user.id);
+    if (!characters) res.status(403).json('CHARACTERS EMPTY');
+    response.status(200).json(characters)
   } catch (error) {
     response.status(500)
   }
 })
+
 router.get('/:id', async (request, response) => {
   try {
     const { id } = request.params

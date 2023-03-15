@@ -5,15 +5,19 @@ const {
   createSpells,
   updateSpells,
   removeSpells,
+  getAllSpells,
 } = require('../controllers/spells')
+
 router.get('/', async (request, response) => {
   try {
-    const spells = await getSpellsList()
+    const spells = await getAllSpells(request.user.id);
+    if (!spells) res.status(403).json('SPELLS EMPTY');
     response.status(200).json(spells)
   } catch (error) {
     response.status(500)
   }
 })
+
 router.get('/:id', async (request, response) => {
   try {
     const { id } = request.params
